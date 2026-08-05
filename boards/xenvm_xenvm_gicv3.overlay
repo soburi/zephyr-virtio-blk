@@ -12,6 +12,15 @@
 		interrupt-parent = <&gic>;
 		status = "okay";
 
+		/*
+		 * Domain id of the grant-based backend (the driver domain running
+		 * the Xen vhost-blk sample with grant_usage=1). It MUST match the
+		 * backend domain's actual domid, otherwise the frontend grants its
+		 * pages to the wrong domain and the backend cannot map them. Adjust
+		 * this to the driver domain's domid for your deployment.
+		 */
+		xen,backend-domid = <1>;
+
 		virtio_blk: virtio-blk {
 			compatible = "virtio,blk";
 			disk-name = "VIRTIOBLK0";

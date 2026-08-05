@@ -12,6 +12,13 @@
 		interrupt-parent = <&gic>;
 		status = "okay";
 
+		/*
+		 * Domain id of the grant-based backend (driver domain). Must match
+		 * the backend domain's actual domid; adjust for your deployment.
+		 * Enables Xen grant DMA addressing together with the board conf.
+		 */
+		xen,backend-domid = <1>;
+
 		virtio_blk: virtio-blk {
 			compatible = "virtio,blk";
 			disk-name = "VIRTIOBLK0";

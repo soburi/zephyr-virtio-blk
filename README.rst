@@ -52,9 +52,12 @@ slot at ``0x02000000`` and IRQ 33. Build it with:
    :compact:
 
 The Xen domain configuration must provide a writable VirtIO block device at
-that slot. As with the other Xen configurations, the frontend currently uses
-guest physical DMA addresses and does not implement Xen grant DMA addresses;
-grant-backed backends therefore require additional frontend support.
+that slot. The ``boards/xenvm_xenvm_gicv3.conf`` overlay enables
+:kconfig:option:`CONFIG_VIRTIO_XEN_GRANT_DMA`, so the frontend grants its
+virtqueue and buffer pages to the backend domain and publishes Xen grant DMA
+addresses. This makes it compatible with a grant-backed backend such as the Xen
+``vhost_blk`` sample (``grant_usage=1``). Set the ``xen,backend-domid`` property
+in the board overlay to the backend (driver domain) domid; it defaults to ``1``.
 
 Sparrow Hawk R-Car V4H
 ======================
@@ -72,11 +75,14 @@ Build it with the ``xen-guest`` snippet:
 
 The board overlay describes the first Xen Arm VirtIO-MMIO slot at
 ``0x02000000`` with IRQ 33. The VirtIO block disk must therefore be the first
-VirtIO-MMIO device assigned to the domain. The Xen configuration must use
-``grant_usage=0`` because the Zephyr VirtIO frontend currently publishes guest
-physical addresses and does not implement Xen grant DMA addresses. A backend
-that requires ``grant_usage=1``, including the Xen ``vhost_blk`` sample, is not
-compatible with this frontend yet.
+VirtIO-MMIO device assigned to the domain. The
+``boards/sparrowhawk_rcar_v4h_r8a779g0_a76.conf`` overlay enables
+:kconfig:option:`CONFIG_VIRTIO_XEN_GRANT_DMA`, so the frontend publishes Xen
+grant DMA addresses and works with a ``grant_usage=1`` backend, including the
+Xen ``vhost_blk`` sample. Set the ``xen,backend-domid`` property in the board
+overlay to the backend (driver domain) domid. Use ``grant_usage=0`` only if you
+disable :kconfig:option:`CONFIG_VIRTIO_XEN_GRANT_DMA`, in which case the
+frontend falls back to guest physical addresses.
 
 The guest configuration must allocate 16 MiB of RAM, matching the
 ``xen-guest`` snippet, and expose a writable VirtIO block device. The sample
